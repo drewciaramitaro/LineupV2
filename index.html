@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Front End Lineup</title>
+<link rel="stylesheet" href="https://use.typekit.net/ryp8bab.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Add this to your HTML file -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script type="module" src="js/lineup.js"></script>
+
+    <script src="js/lineup.js" type="module"></script>
+    
+</head>
+<body>
+    <header>
+
+    <input type="file" id="file-input">
+    </header>
+    
+<div id="tables">
+    
+
+</div>
+
+<template id="row-template">
+    <tr>
+        <td id="employee"></td>
+        <td id="label"></td>
+        <td id="job"></td>
+        <td id="start"></td>
+        <td id="end"></td>
+        <td id="length"></td>
+        <td id="break"></td>
+        <td id="lunch"></td>
+        <td id="break2"></td>
+        <td id="notes"></td>
+    </tr>
+</template>
+
+<template id="table-template">
+<table>
+    <thead>
+        <h1 id="title">Floor Plan</h1>
+        <tr>
+            <th colspan="10" id="date"></th>
+        </tr>
+        <tr>
+            <th>Employee</th>
+            <th>Label</th>
+            <th>Job</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Length</th>
+            <th>Break</th>
+            <th>Lunch</th>
+            <th>Break</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+        <tbody>
+
+        </tbody>
+</table>
+</template>
+
+</body>
+</html>
