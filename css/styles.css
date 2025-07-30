@@ -12,6 +12,19 @@ th, td {
     font-size:x-small;
     font-family: 'trade-gothic-next';
 }
+
+th{
+    text-align: center  ;
+}
+
+#length{
+    text-align: center;
+    width: 3%;
+}
+#start, #end, #break, #lunch, #break2{
+    text-align: center  ;
+}
+
 #date{
     font-size: large;
     text-align: center;
@@ -31,4 +44,10 @@ thead {
     text-align: center;
     font-size: xx-large;
     font-family: 'trade-gothic-next-condensed';
+}
+
+@media print {
+    header{
+        display: none;
+    }
 }

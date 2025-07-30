@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Front End Lineup</title>
-<link rel="stylesheet" href="https://use.typekit.net/ryp8bab.css">
+    <link rel="stylesheet" href="https://use.typekit.net/ryp8bab.css">
     <link rel="stylesheet" href="css/styles.css">
     <!-- Add this to your HTML file -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -15,7 +15,25 @@
 <body>
     <header>
 
-    <input type="file" id="file-input">
+        <input type="file" id="file-input">
+
+        <div>
+        <input type="radio" id="normal-breaks" name="breaks-display" checked>
+            <label for="show-cashiers">Normal Breaks</label>
+            <input type="radio" id="show-all-breaks" name="breaks-display" >
+            <label for="show-all-breaks">Show All Breaks</label>
+            <input type="radio" id="no-breaks" name="breaks-display" >
+            <label for="no-breaks">No Breaks</label>
+        </div>
+
+        <div>
+            <input type="radio" name="sort" id="sort-job" checked>
+            <label for="sort-job">Sort by Job</label>
+            <input type="radio" name="sort" id="sort-time">
+            <label for="sort-time">Sort by Time</label>
+        </div>
+
+        <button onclick="window.print()">Print</button>
     </header>
     
 <div id="tables">
