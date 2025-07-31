@@ -1,5 +1,5 @@
 
-table{
+#tables > table{
     border: 1px solid black;
     border-collapse: collapse;
     width: 100%;
@@ -17,6 +17,14 @@ th{
     text-align: center  ;
 }
 
+#print-table{
+   width: 100%;
+   border: none;
+}
+#print-table > tbody > tr > td, #print-table > thead > tr > td {
+    border: none;
+}
+
 #length{
     text-align: center;
     width: 3%;
@@ -25,13 +33,29 @@ th{
     text-align: center  ;
 }
 
+#break, #lunch, #break2{
+    width: 5%;
+}
+
+#label{
+    width: 10%;
+}
+
+#job{
+    width: 10%;
+}
+
+#start, #end{
+    width: 7%;
+}
+
 #date{
     font-size: large;
     text-align: center;
     font-family: 'trade-gothic-next-condensed';
 }
 
-thead {
+#tables > table thead {
     background-color: #0A75C1;
     color: white;
 }
@@ -50,4 +74,9 @@ thead {
     header{
         display: none;
     }
+    @page {
+        margin-top:0.8in;
+        margin-bottom: 1.4in;
+    }
 }
+

@@ -130,8 +130,10 @@ function process_file(e) {
                     breakTime.setMinutes(Math.round(breakTime.getMinutes() / 15) * 15);
 
                     // check if the breaktime is already in the breaktimes array, if it is, keep moving it back 15 minutes until it isn't
-                    while (breaktimes.some(bt => bt.getTime() === breakTime.getTime())) {
-                        breakTime.setMinutes(breakTime.getMinutes() + 15);
+                    if (element.__EMPTY >=4){ // but dont move it for super short shifts
+                        while (breaktimes.some(bt => bt.getTime() === breakTime.getTime())) {
+                                breakTime.setMinutes(breakTime.getMinutes() + 15);
+                            }
                     }
                     // otherwise add it to the breaktimes array
                     breaktimes.push(breakTime);

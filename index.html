@@ -35,11 +35,27 @@
 
         <button onclick="window.print()">Print</button>
     </header>
-    
-<div id="tables">
-    
+<table id="print-table">
+    <thead>
+        <tr>
+            <td>
+            <div id="print-head">
+        
+                <h1 id="title">Floor Plan</h1>
+            </div>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+        <div id="tables">
+            
 
-</div>
+        </div></td>
+        </tr>
+    </tbody>
+</table>
 
 <template id="row-template">
     <tr>
@@ -59,7 +75,6 @@
 <template id="table-template">
 <table>
     <thead>
-        <h1 id="title">Floor Plan</h1>
         <tr>
             <th colspan="10" id="date"></th>
         </tr>
