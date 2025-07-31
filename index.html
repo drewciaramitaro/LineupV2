@@ -32,6 +32,24 @@
             <input type="radio" name="sort" id="sort-time">
             <label for="sort-time">Sort by Time</label>
         </div>
+        <div>
+            <select name="job-filter" id="job-filter">
+                <option value="">All</option>
+                <option value="Regular Cashier">Regular Cashier</option>
+                <option value="Express Cashier">Express Cashier</option>
+                <option value="Easy Scan Cashier">Easy Scan Cashier</option>
+                <option value="Courtesy Clerk">Courtesy Clerk</option>
+                <option value="Housekeeping">Housekeeping</option>
+                <option value="Shopper">Shopper</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Office Teammate">Office Teammate</option>
+                
+            </select>
+            <label for="job-filter">Job Filter</label>
+
+            <input type="checkbox" name="express-with-regular" id="express-with-regular" checked>
+            <label for="express-with-regular">Sort Express with Regular Cashiers</label>
+        </div>
 
         <button onclick="window.print()">Print</button>
     </header>

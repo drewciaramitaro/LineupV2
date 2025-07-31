@@ -18,10 +18,12 @@ function process_file(e) {
 
     var currentDate = null;
 
+    // settings!
     var show_all_breaks = document.querySelector('#show-all-breaks').checked;
     var no_breaks = document.querySelector('#no-breaks').checked;
-
     var sort_by_time = document.querySelector('#sort-time').checked;
+    var job_filter = document.querySelector('#job-filter').value;
+    var sort_express_with_regular = document.querySelector('#express-with-regular').checked;
 
 
     const row_template = document.querySelector('#row-template');
@@ -95,8 +97,17 @@ function process_file(e) {
         
         // Sort the shifts by job title
         newday.sort((a, b) => {
-            if (a.__EMPTY_4 < b.__EMPTY_4) return -1;
-            if (a.__EMPTY_4 > b.__EMPTY_4) return 1;
+            if(sort_express_with_regular){
+            // if the job is express, sort it with the regualr cashiers
+            var job_a = a.__EMPTY_4 === "Express Cashier" ? "Regular Cashier" : a.__EMPTY_4;
+            var job_b = b.__EMPTY_4 === "Express Cashier" ? "Regular Cashier" : b.__EMPTY_4;}
+            else {
+            var job_a = a.__EMPTY_4;
+            var job_b = b.__EMPTY_4;
+            }
+
+            if (job_a < job_b) return -1;
+            if (job_a > job_b) return 1;
             return 0;
         });
 
@@ -236,6 +247,9 @@ function process_file(e) {
                 row.querySelector('#lunch').style.textAlign = 'left';
                 row.querySelector('#break2').innerHTML = element.__EMPTY_10 > 8 ? 'B': '';
                 row.querySelector('#break2').style.textAlign = 'left';
+            }
+            if (job_filter && job_filter.length > 0 && !element.__EMPTY_4.toLowerCase().includes(job_filter.toLowerCase())) {
+                return; // skip this row if it doesn't match the job filter
             }
             table_body.appendChild(row);
         });
