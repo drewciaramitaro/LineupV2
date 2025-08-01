@@ -150,7 +150,7 @@ function process_file(e) {
                     breaktimes.push(breakTime);
 
                     console.log(breaktimes);
-                    row.querySelector('#break').innerHTML = breakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    row.querySelector('#break').innerHTML = 'B '+breakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
                     // however if the breaktime isn't during this shift segment, set it to '-'
                     if (breakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || breakTime.getTime()
@@ -181,8 +181,8 @@ function process_file(e) {
                     }
                     breaktimes.push(lunchBreakTime);
 
-                    row.querySelector('#break').innerHTML = firstBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    row.querySelector('#lunch').innerHTML = lunchBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    row.querySelector('#break').innerHTML = 'B '+ firstBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    row.querySelector('#lunch').innerHTML = 'L '+ lunchBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
                     // however if the breaktime isn't during this shift segment, set it to '-'
                     if (firstBreakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || firstBreakTime.getTime()
@@ -221,9 +221,9 @@ function process_file(e) {
                         secondBreakTime.setMinutes(secondBreakTime.getMinutes() + 15);
                     }
                     breaktimes.push(secondBreakTime);
-                    row.querySelector('#break').innerHTML = firstBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    row.querySelector('#lunch').innerHTML = lunchBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    row.querySelector('#break2').innerHTML = secondBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    row.querySelector('#break').innerHTML = 'B '+firstBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    row.querySelector('#lunch').innerHTML = 'L '+lunchBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    row.querySelector('#break2').innerHTML = 'B '+secondBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
                                                 // however if the breaktime isn't during this shift segment, set it to '-'
                     if (firstBreakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || firstBreakTime.getTime()
                         > excelDateToJSDate(element.__EMPTY_6).getTime()) {
