@@ -94,7 +94,7 @@ function process_file(e) {
         Object.keys(employeeShifts).forEach(employee => {
             newday.push(...employeeShifts[employee]);
         });
-        
+        newday.sort((a, b) => a.__EMPTY_5 - b.__EMPTY_5);
         // Sort the shifts by job title
         newday.sort((a, b) => {
             if(sort_express_with_regular){
