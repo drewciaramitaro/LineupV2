@@ -70,11 +70,11 @@ function process_file(e) {
                     
                 // also add elipses if there is another shift after this one
                     if (index < employeeShifts[_tm].length - 1) {
-                        shift.__NEXT_INDICATOR = '(+)';
+                        shift.__NEXT_INDICATOR = ' ⇄';
                     }
                     // if theres one before it, add a before indicator
                     if (index > 0) {
-                        shift.__PREVIOUS_INDICATOR = '(+)';
+                        shift.__PREVIOUS_INDICATOR = '⇆ ';
                     }
                 });
             }
