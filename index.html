@@ -4,21 +4,19 @@
     <meta charset="UTF-8" />
     <title>Front End Lineup</title>
     <link rel="stylesheet" href="https://use.typekit.net/ryp8bab.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?ch=haVOl">
     <!-- Add this to your HTML file -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script type="module" src="js/lineup.js"></script>
-
-    <script src="js/lineup.js" type="module"></script>
+    <script type="module" src="js/lineup.js?ch=haVOl"></script>
     
 </head>
 <body>
     <header>
 
-        <input type="file" id="file-input">
 
         <div>
-        <input type="radio" id="normal-breaks" name="breaks-display" checked>
+            <p style="margin-bottom: 0;">Settings (Must be set before loading file)</p>
+            <input type="radio" id="normal-breaks" name="breaks-display" checked>
             <label for="show-cashiers">Normal Breaks</label>
             <input type="radio" id="show-all-breaks" name="breaks-display" >
             <label for="show-all-breaks">Show All Breaks</label>
@@ -50,8 +48,12 @@
             <input type="checkbox" name="express-with-regular" id="express-with-regular" checked>
             <label for="express-with-regular">Sort Express with Regular Cashiers</label>
         </div>
-
-        <button onclick="window.print()">Print</button>
+        
+            <p style="margin-bottom: 0;">Upload File</p>
+        <input type="file" id="file-input" accept=".xlsx, .xls" />
+        <div style="display:flex">
+            <button onclick="window.print()" style="margin:auto;">Print</button>
+        </div>
     </header>
 <table id="print-table">
     <thead>
