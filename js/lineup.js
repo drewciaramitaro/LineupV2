@@ -176,7 +176,7 @@ function process_file(e) {
 
             var row = row_template.content.cloneNode(true);
             row.querySelector('#employee').innerHTML = element.__EMPTY;
-            row.querySelector('#label').innerHTML = element.__EMPTY_3 ? element.__EMPTY_3 : "";
+            row.querySelector('#label').value = element.__EMPTY_3 ? element.__EMPTY_3 : "";
             row.querySelector('#job').innerHTML = element.__EMPTY_4 ? element.__EMPTY_4 : "";
             row.querySelector('#start').innerHTML = (element.__PREVIOUS_INDICATOR ? element.__PREVIOUS_INDICATOR : "") + excelDateToJSDate(element.__EMPTY_5).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
             row.querySelector('#end').innerHTML = excelDateToJSDate(element.__EMPTY_6).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + (element.__NEXT_INDICATOR ? element.__NEXT_INDICATOR : "");

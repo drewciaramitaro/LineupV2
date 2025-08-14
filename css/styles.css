@@ -37,12 +37,13 @@ th{
     width: 7%;
 }
 
-#break, #lunch, #break2{
+
+.editable{
     all: unset;
     width: 100%;
 }
 
-#label{
+#label-c{
     width: 10%;
 }
 
