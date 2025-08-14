@@ -10,6 +10,44 @@ function read_file() {
         reader.readAsBinaryString(upload_field.files[0]);
     }
 }
+
+function generateBreaks(shiftStart, shiftEnd, date, length) {
+    console.log("Generating breaks for shift:", shiftStart, shiftEnd, date);
+
+    var start = excelDateToJSDate(shiftStart);
+    var end = excelDateToJSDate(shiftEnd);
+    let break1 = null;
+    let lunch = null;
+    let break2 = null;
+    
+    if(length <= 6){
+        break1 = new Date(start.getTime() + (end.getTime() - start.getTime()) / 2);
+        // round it to the nearest 15 minutes
+        break1.setMinutes(Math.round(break1.getMinutes() / 15) * 15);       
+    }
+
+    else if(length > 6 && length <= 8){
+        break1 = new Date(start.getTime() + (end.getTime() - start.getTime()) / 3);
+        lunch = new Date(start.getTime() + (end.getTime() - start.getTime()) * 2 / 3);
+        break1.setMinutes(Math.round(break1.getMinutes() / 15) * 15);
+        lunch.setMinutes(Math.round(lunch.getMinutes() / 15) * 15);
+    }
+
+    else if(length > 8){
+        break1 = new Date(start.getTime() + (end.getTime() - start.getTime()) / 4);
+        lunch = new Date(start.getTime() + (end.getTime() - start.getTime()) / 2);
+        break2 = new Date(start.getTime() + (end.getTime() - start.getTime()) * 3 / 4);
+        // round it to the nearest 15 minutes   
+        break1.setMinutes(Math.round(break1.getMinutes() / 15) * 15);
+        lunch.setMinutes(Math.round(lunch.getMinutes() / 15) * 15);
+        break2.setMinutes(Math.round(break2.getMinutes() / 15) * 15);
+    }
+
+    return [break1, lunch, break2];
+
+}
+
+
 function process_file(e) {
     var workbook = XLSX.read(e, { type: "binary" });
     var sheet = workbook.Sheets["Report"];
@@ -83,9 +121,24 @@ function process_file(e) {
             var end = employeeShifts[_tm][employeeShifts[_tm].length - 1].__EMPTY_6;
             // If the start and end times are the same, set the start time to the first
 
+            // if any of the shifts are "Regular Cashier", "Express Cashier", "Easy Scan Cashier", "Liquor TM", "Runner", "Courtesy Clerk", do breaks
+
+            if (employeeShifts[_tm].some(shift => shift.__EMPTY_4 === "Regular Cashier" || shift.__EMPTY_4 === "Express Cashier" || shift.__EMPTY_4 === "Easy Scan Cashier" || shift.__EMPTY_4 === "Liquor TM" || shift.__EMPTY_4 === "Runner" || shift.__EMPTY_4 === "Courtesy Clerk") || show_all_breaks) {
+                var breaks = generateBreaks(start, end, day, employeeShifts[_tm][0].__EMPTY_10);
+            }
+            else{
+                var breaks = [];
+            }
+
             employeeShifts[_tm].forEach(shift => {
                 shift.__IN_TIME = start;
                 shift.__OUT_TIME = end;
+                if (breaks.length > 0) {
+                    shift.__BREAK1 = breaks[0] ? breaks[0] : null;
+                    shift.__LUNCH = breaks[1] ? breaks[1] : null;
+                    shift.__BREAK2 = breaks[2] ? breaks[2] : null;
+                }
+
             });
 
         });
@@ -133,140 +186,36 @@ function process_file(e) {
             const noPushJobs = [
                 "Shopper", "Supervisor", "Office Teammate", "Cash and Sales", "Co Manager", "Housekeeping", "PAC"
             ];
-            const shouldPushBreaks = !noPushJobs.includes(element.__EMPTY_4);
+            const shouldPushBreaks = false;//!noPushJobs.includes(element.__EMPTY_4);
 
             // if the job is "Courtesy Clerk", "Regular Cashier", "Express Cashier", "Easy Scan Cashier", "Liquor TM", "Runner", do breaks   
             if (!no_breaks && (element.__EMPTY_4 === "Courtesy Clerk" || element.__EMPTY_4 === "Regular Cashier" || element.__EMPTY_4 === "Express Cashier" || element.__EMPTY_4 === "Easy Scan Cashier" || element.__EMPTY_4 === "Liquor TM" || element.__EMPTY_4 === "Runner" || show_all_breaks)) {
 
-                if (element.__EMPTY_10 <= 6) {
-                    // If the shift is 6 hours or less, break is half way between start and end
-                    var start = excelDateToJSDate(element.__IN_TIME);
-                    var end = excelDateToJSDate(element.__OUT_TIME);
-                    var breakTime = new Date(start.getTime() + (end.getTime() - start.getTime()) / 2);
-                    // round it to the nearest 15 minutes
-                    breakTime.setMinutes(Math.round(breakTime.getMinutes() / 15) * 15);
-
-                    // check if the breaktime is already in the breaktimes array, if it is, keep moving it back 15 minutes until it isn't
-                    if (element.__EMPTY_10 >= 4 && shouldPushBreaks) { // but dont move it for super short shifts
-                        let moveCount = 0;
-                        while (breaktimes.some(bt => bt.getTime() === breakTime.getTime()) && moveCount < 2) {
-                            breakTime.setMinutes(breakTime.getMinutes() + 15);
-                            moveCount++;
-                        }
-                    }
-                    // otherwise add it to the breaktimes array
-                    breaktimes.push(breakTime);
-
-                    console.log(breaktimes);
-                    row.querySelector('#break').innerHTML = 'B ' + breakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-
-                    // however if the breaktime isn't during this shift segment, set it to '-'
-                    if (breakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || breakTime.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime()) {
-                        row.querySelector('#break').innerHTML = '-';
-                    }
+                let break1 = element.__BREAK1 ? 'B ' + element.__BREAK1.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+                let lunch = element.__LUNCH ? 'L ' + element.__LUNCH.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+                let break2 = element.__BREAK2 ? 'B ' + element.__BREAK2.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+                row.querySelector('#break').value = break1;
+                row.querySelector('#lunch').value = lunch;
+                row.querySelector('#break2').value = break2;
+                // however if the breaktime isn't during this shift segment, set it to '-'
+                if ( element.__BREAK1 && (element.__BREAK1.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || element.__BREAK1.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime())) {
+                    row.querySelector('#break').value = '-';
                 }
-
-                if (element.__EMPTY_10 > 6 && element.__EMPTY_10 <= 8) {
-                    // If the shift is between 6 and 8 hours, first break is a third of the way through, lunch is 2/3 of the way through
-                    var start = excelDateToJSDate(element.__IN_TIME);
-                    var end = excelDateToJSDate(element.__OUT_TIME);
-                    var firstBreakTime = new Date(start.getTime() + (end.getTime() - start.getTime()) / 3);
-                    var lunchBreakTime = new Date(start.getTime() + (end.getTime() - start.getTime()) * 2 / 3);
-                    // round it to the nearest 15 minutes
-                    firstBreakTime.setMinutes(Math.round(firstBreakTime.getMinutes() / 15) * 15);
-                    lunchBreakTime.setMinutes(Math.round(lunchBreakTime.getMinutes() / 15) * 15);
-
-                    // check if the breaktime is already in the breaktimes array, if it is, keep moving it back 15 minutes until it isn't 
-                    if (shouldPushBreaks) {
-                        let moveCount = 0;
-                        while (breaktimes.some(bt => bt.getTime() === firstBreakTime.getTime()) && moveCount < 2) {
-                            firstBreakTime.setMinutes(firstBreakTime.getMinutes() + 15);
-                            moveCount++;
-                        }
-                    }
-                    breaktimes.push(firstBreakTime);
-
-                    if (shouldPushBreaks) {
-                        let lunchMoveCount = 0;
-                        while (breaktimes.some(bt => bt.getTime() === lunchBreakTime.getTime()) && lunchMoveCount < 2) {
-                            lunchBreakTime.setMinutes(lunchBreakTime.getMinutes() + 15);
-                            lunchMoveCount++;
-                        }
-                    }
-                    breaktimes.push(lunchBreakTime);
-
-                    row.querySelector('#break').innerHTML = 'B ' + firstBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    row.querySelector('#lunch').innerHTML = 'L ' + lunchBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-
-                    // however if the breaktime isn't during this shift segment, set it to '-'
-                    if (firstBreakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || firstBreakTime.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime()) {
-                        row.querySelector('#break').innerHTML = '-';
-                    }
-                    if (lunchBreakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || lunchBreakTime.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime()) {
-                        row.querySelector('#lunch').innerHTML = '-';
-                    }
-
+                if (element.__LUNCH && (element.__LUNCH.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || element.__LUNCH.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime())) {
+                    row.querySelector('#lunch').value = '-';
                 }
-                if (element.__EMPTY_10 > 8) {
-                    // finally, if the shift is more than 8 hours, first break is a quarter of the way through, lunch is half way through, second break is 3/4 of the way through
-                    var start = excelDateToJSDate(element.__IN_TIME);
-                    var end = excelDateToJSDate(element.__OUT_TIME);
-                    var firstBreakTime = new Date(start.getTime() + (end.getTime() - start.getTime()) / 4);
-                    var lunchBreakTime = new Date(start.getTime() + (end.getTime() - start.getTime()) / 2);
-                    var secondBreakTime = new Date(start.getTime() + (end.getTime() - start.getTime()) * 3 / 4);
-                    // round it to the nearest 15 minutes   
-                    firstBreakTime.setMinutes(Math.round(firstBreakTime.getMinutes() / 15) * 15);
-                    lunchBreakTime.setMinutes(Math.round(lunchBreakTime.getMinutes() / 15) * 15);
-                    secondBreakTime.setMinutes(Math.round(secondBreakTime.getMinutes() / 15) * 15);
-                    // check if the breaktime is already in the breaktimes array, if it is, keep moving it back 15 minutes until it isn't
-                    if (shouldPushBreaks) {
-                        let firstBreakMoveCount = 0;
-                        while (breaktimes.some(bt => bt.getTime() === firstBreakTime.getTime()) && firstBreakMoveCount < 2) {
-                            firstBreakTime.setMinutes(firstBreakTime.getMinutes() + 15);
-                            firstBreakMoveCount++;
-                        }
-                    }
-                    breaktimes.push(firstBreakTime);
-
-                    if (shouldPushBreaks) {
-                        let lunchBreakMoveCount = 0;
-                        while (breaktimes.some(bt => bt.getTime() === lunchBreakTime.getTime()) && lunchBreakMoveCount < 2) {
-                            lunchBreakTime.setMinutes(lunchBreakTime.getMinutes() + 15);
-                            lunchBreakMoveCount++;
-                        }
-                    }
-                    breaktimes.push(lunchBreakTime);
-
-                    if (shouldPushBreaks) {
-                        let secondBreakMoveCount = 0;
-                        while (breaktimes.some(bt => bt.getTime() === secondBreakTime.getTime()) && secondBreakMoveCount < 2) {
-                            secondBreakTime.setMinutes(secondBreakTime.getMinutes() + 15);
-                            secondBreakMoveCount++;
-                        }
-                    }
-                    breaktimes.push(secondBreakTime);
-                    row.querySelector('#break').innerHTML = 'B ' + firstBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    row.querySelector('#lunch').innerHTML = 'L ' + lunchBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    row.querySelector('#break2').innerHTML = 'B ' + secondBreakTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    // however if the breaktime isn't during this shift segment, set it to '-'
-                    if (firstBreakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || firstBreakTime.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime()) {
-                        row.querySelector('#break').innerHTML = '-';
-                    }
-                    if (lunchBreakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || lunchBreakTime.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime()) {
-                        row.querySelector('#lunch').innerHTML = '-';
-                    }
-                    if (secondBreakTime.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || secondBreakTime.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime()) {
-                        row.querySelector('#break2').innerHTML = '-';
-                    }
+                if (element.__BREAK2 && (element.__BREAK2.getTime() < excelDateToJSDate(element.__EMPTY_5).getTime() || element.__BREAK2.getTime() > excelDateToJSDate(element.__EMPTY_6).getTime())) {
+                    row.querySelector('#break2').value = '-';
                 }
+                
             }
 
             else {
-                row.querySelector('#break').innerHTML = 'B';
+                row.querySelector('#break').value = 'B';
                 row.querySelector('#break').style.textAlign = 'left';
-                row.querySelector('#lunch').innerHTML = element.__EMPTY_10 > 6 ? 'L' : '';
+                row.querySelector('#lunch').value = element.__EMPTY_10 > 6 ? 'L' : '';
                 row.querySelector('#lunch').style.textAlign = 'left';
-                row.querySelector('#break2').innerHTML = element.__EMPTY_10 > 8 ? 'B' : '';
+                row.querySelector('#break2').value = element.__EMPTY_10 > 8 ? 'B' : '';
                 row.querySelector('#break2').style.textAlign = 'left';
             }
             if (job_filter && job_filter.length > 0 && !element.__EMPTY_4.toLowerCase().includes(job_filter.toLowerCase())) {

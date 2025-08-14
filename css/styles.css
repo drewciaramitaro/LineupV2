@@ -33,8 +33,13 @@ th{
     text-align: center  ;
 }
 
-#break, #lunch, #break2{
+#break-c, #lunch-c, #break2-c{
     width: 7%;
+}
+
+#break, #lunch, #break2{
+    all: unset;
+    width: 100%;
 }
 
 #label{
@@ -104,6 +109,10 @@ button:hover{
     @page {
         margin-top:0.8in;
         margin-bottom: 1.4in;
+    }
+    #break, #lunch, #break2{
+    all: unset;
+    width: 100%;
     }
 }
 
