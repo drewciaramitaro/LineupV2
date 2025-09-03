@@ -104,6 +104,23 @@ function process_file(e) {
                 employeeShifts[_tm].forEach((shift, index) => {
                     if (shift.__EMPTY_3 !== undefined && shift.__EMPTY_3.includes('/')) {
                         shift.__EMPTY_3 = (shift.__EMPTY_3.split('/')[index]).trim();
+                        if (shift.__EMPTY_4 === "Easy Scan Cashier" && shift.__EMPTY_3 === "Easy Scan") {
+                            shift.__EMPTY_3 = "";
+                        }
+
+                        if (shift.__EMPTY_4 === "Office Teammate"&& (shift.__EMPTY_3 === "Service Desk" || shift.__EMPTY_3 === "Desk")) {
+                            shift.__EMPTY_3 = "";
+                        }
+
+                        if (shift.__EMPTY_4 === "Supervisor" && (shift.__EMPTY_3 === "Supervisor" || shift.__EMPTY_3 === "Super")) {
+                            shift.__EMPTY_3 = "";
+                        }
+
+                        if (shift.__EMPTY_4 === "Cash and Sales" && (shift.__EMPTY_3 === "Cash & Sales" || shift.__EMPTY_3 === "Cash and Sales")) {
+                            shift.__EMPTY_3 = "";
+                        }
+
+
                     }
 
                     // also add elipses if there is another shift after this one
