@@ -247,5 +247,5 @@ function process_file(e) {
 }
 
 function excelDateToJSDate(excelDate) {
-    return new Date(Math.round((excelDate - 25569) * 86400 * 1000) + 4 * 60 * 60 * 1000);
+    return new Date(Math.round((excelDate - 25569) * 86400 * 1000) + 5 * 60 * 60 * 1000);
 }
