@@ -247,5 +247,8 @@ function process_file(e) {
 }
 
 function excelDateToJSDate(excelDate) {
-    return new Date(Math.round((excelDate - 25569) * 86400 * 1000) + 5 * 60 * 60 * 1000);
+    var ms = (excelDate - 25569) * 86400 * 1000;
+    var utcDate = new Date(Math.round(ms));
+    var localMs = utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000;
+    return new Date(Math.round(localMs));
 }
