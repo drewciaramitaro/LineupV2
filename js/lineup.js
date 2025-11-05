@@ -193,6 +193,14 @@ function process_file(e) {
 
             var row = row_template.content.cloneNode(true);
             row.querySelector('#employee').innerHTML = element.__EMPTY;
+            // i'll prefix the label with the store number if someones from aonther store
+            // move it to the job instead of the label field
+            if(element.__EMPTY_3 && element.__EMPTY_3.startsWith('#')){
+                row.querySelector('#job').style.fontSize = '0.8em';
+                element.__EMPTY_4 = element.__EMPTY_3.substring(0,5) + '/ ' +element.__EMPTY_4 ;
+                element.__EMPTY_3 = element.__EMPTY_3.substring(5);
+
+            }
             row.querySelector('#label').value = element.__EMPTY_3 ? element.__EMPTY_3 : "";
             row.querySelector('#job').innerHTML = element.__EMPTY_4 ? element.__EMPTY_4 : "";
             row.querySelector('#start').innerHTML = (element.__PREVIOUS_INDICATOR ? element.__PREVIOUS_INDICATOR : "") + excelDateToJSDate(element.__EMPTY_5).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
