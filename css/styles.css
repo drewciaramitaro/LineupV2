@@ -63,7 +63,7 @@ th{
 
 #tables > table thead {
     print-color-adjust: exact;
-    --webkit-print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
     background-color: #0A75C1;
     color: white;
 }
