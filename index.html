@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <title>Front End Lineup</title>
     <link rel="stylesheet" href="https://use.typekit.net/ryp8bab.css">
-    <link rel="stylesheet" href="css/styles.css?ch=aEzcG">
+    <link rel="stylesheet" href="css/styles.css?ch=Emd6t">
     <!-- Add this to your HTML file -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script type="module" src="js/lineup.js?ch=aEzcF"></script>
+    <script type="module" src="js/lineup.js?ch=Emd6t"></script>
     
 </head>
 <body>
@@ -22,6 +22,8 @@
             <label for="show-all-breaks">Show All Breaks</label>
             <input type="radio" id="no-breaks" name="breaks-display" >
             <label for="no-breaks">No Breaks</label>
+            <input type="checkbox" name="use-generated-lunch" id="use-generated-lunch">
+            <label for="use-generated-lunch">Use UKG Lunch Times</label>
         </div>
 
         <div>
@@ -48,6 +50,10 @@
             <input type="checkbox" name="express-with-regular" id="express-with-regular" checked>
             <label for="express-with-regular">Sort Express with Regular Cashiers</label>
         </div>
+        <div>
+            <span>Daily Message</span>
+            <input id="week-message-input" value="Remember to read & sign the daily sign-offs before using a register!"></input>
+        </div>
         
             <p style="margin-bottom: 0;">Upload File</p>
         <input type="file" id="file-input" accept=".xlsx, .xls" />
@@ -62,6 +68,7 @@
             <div id="print-head">
         
                 <h1 id="title">Floor Plan</h1>
+                <p id="week-message">Remember to read & sign the daily sign-offs before using a register!</p>
             </div>
             </td>
         </tr>

@@ -11,11 +11,12 @@ function read_file() {
     }
 }
 
-function generateBreaks(shiftStart, shiftEnd, date, length) {
-    console.log("Generating breaks for shift:", shiftStart, shiftEnd, date);
+function generateBreaks(shiftStart, shiftEnd, date, length, shiftUkgLunch) {
+    console.log("Generating breaks for shift:", shiftStart, shiftEnd, date, shiftUkgLunch);
 
     var start = excelDateToJSDate(shiftStart);
     var end = excelDateToJSDate(shiftEnd);
+    let ukgLunch = new Date(`${date} ${shiftUkgLunch}`);
     let break1 = null;
     let lunch = null;
     let break2 = null;
@@ -41,6 +42,10 @@ function generateBreaks(shiftStart, shiftEnd, date, length) {
         break1.setMinutes(Math.round(break1.getMinutes() / 15) * 15);
         lunch.setMinutes(Math.round(lunch.getMinutes() / 15) * 15);
         break2.setMinutes(Math.round(break2.getMinutes() / 15) * 15);
+    }
+
+    if(length > 6 && document.querySelector('#use-generated-lunch').checked){
+        lunch = ukgLunch;
     }
 
     return [break1, lunch, break2];
@@ -141,7 +146,15 @@ function process_file(e) {
             // if any of the shifts are "Regular Cashier", "Express Cashier", "Easy Scan Cashier", "Liquor TM", "Runner", "Courtesy Clerk", do breaks
 
             if (employeeShifts[_tm].some(shift => shift.__EMPTY_4 === "Regular Cashier" || shift.__EMPTY_4 === "Express Cashier" || shift.__EMPTY_4 === "Easy Scan Cashier" || shift.__EMPTY_4 === "Liquor TM" || shift.__EMPTY_4 === "Runner" || shift.__EMPTY_4 === "Courtesy Clerk") || show_all_breaks) {
-                var breaks = generateBreaks(start, end, day, employeeShifts[_tm][0].__EMPTY_10);
+                let lunch = "";
+                employeeShifts[_tm].forEach((shift, i) => {
+                lunch = shift?.__EMPTY_7;
+
+                if (!lunch) return; // skip shifts without lunch
+
+                console.log(`Shift ${i} lunch:`, lunch);
+                });
+                var breaks = generateBreaks(start, end, day, employeeShifts[_tm][0].__EMPTY_10, lunch);
             }
             else{
                 var breaks = [];
@@ -260,3 +273,7 @@ function excelDateToJSDate(excelDate) {
     var localMs = utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000;
     return new Date(Math.round(localMs));
 }
+const weekMessage = document.querySelector('#week-message')
+document.querySelector('#week-message-input').addEventListener('input', function(t) {
+        weekMessage.innerHTML = t.target.value;
+    });

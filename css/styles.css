@@ -58,13 +58,13 @@ th{
 #date{
     font-size: large;
     text-align: center;
-    font-family: 'trade-gothic-next-condensed';
+    font-family: "alternate-gothic-no-2-d";
 }
 
 #tables > table thead {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
-    background-color: #0A75C1;
+    background-color: #0048bc;
     color: white;
 }
 
@@ -75,7 +75,9 @@ th{
 #title{
     text-align: center;
     font-size: xx-large;
-    font-family: 'trade-gothic-next-condensed';
+    font-family: "alternate-gothic-no-2-d";    
+    font-weight: 100;
+    margin-bottom: 8px;
 }
 header{
     width: fit-content;
@@ -119,3 +121,17 @@ button:hover{
     }
 }
 
+
+#week-message{
+    text-align: center;
+    width:100%;
+    margin-top: 0;
+    margin-bottom: 0;    
+    font-family: "alternate-gothic-no-3-d";    
+    font-weight: 100;
+    font-size: 15px;
+}
+
+#week-message-input{
+    width:100%;
+}
