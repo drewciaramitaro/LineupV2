@@ -52,6 +52,52 @@ function generateBreaks(shiftStart, shiftEnd, date, length, shiftUkgLunch) {
 
 }
 
+function splitOverlappingShifts(shifts) {
+    if (!shifts || shifts.length <= 1) {
+        return shifts ? shifts.slice() : [];
+    }
+
+    const sorted = shifts.slice().sort((a, b) => {
+        if (a.__EMPTY_5 !== b.__EMPTY_5) return a.__EMPTY_5 - b.__EMPTY_5;
+        return b.__EMPTY_6 - a.__EMPTY_6;
+    });
+
+    const boundaries = Array.from(new Set(sorted.flatMap(s => [s.__EMPTY_5, s.__EMPTY_6]))).sort((a, b) => a - b);
+    const segments = [];
+
+    for (let i = 0; i < boundaries.length - 1; i++) {
+        const segmentStart = boundaries[i];
+        const segmentEnd = boundaries[i + 1];
+        const active = sorted.filter(s => s.__EMPTY_5 <= segmentStart && s.__EMPTY_6 >= segmentEnd);
+        if (!active.length) continue;
+
+        const chosen = active.reduce((best, cur) => {
+            if (!best) return cur;
+            if (cur.__EMPTY_5 !== best.__EMPTY_5) return cur.__EMPTY_5 > best.__EMPTY_5 ? cur : best;
+            const curDur = cur.__EMPTY_6 - cur.__EMPTY_5;
+            const bestDur = best.__EMPTY_6 - best.__EMPTY_5;
+            return curDur < bestDur ? cur : best;
+        }, null);
+
+        const copy = Object.assign({}, chosen);
+        copy.__EMPTY_5 = segmentStart;
+        copy.__EMPTY_6 = segmentEnd;
+        segments.push(copy);
+    }
+
+    const merged = [];
+    segments.forEach(segment => {
+        const prev = merged[merged.length - 1];
+        if (prev && prev.__EMPTY_4 === segment.__EMPTY_4 && prev.__EMPTY_3 === segment.__EMPTY_3 && prev.__EMPTY_7 === segment.__EMPTY_7 && prev.__EMPTY_6 === segment.__EMPTY_5) {
+            prev.__EMPTY_6 = segment.__EMPTY_6;
+            prev.__EMPTY_10 = Math.round((prev.__EMPTY_6 - prev.__EMPTY_5) / 3600000 * 100) / 100;
+        } else {
+            merged.push(segment);
+        }
+    });
+
+    return merged;
+}
 
 function process_file(e) {
     var workbook = XLSX.read(e, { type: "binary" });
@@ -103,8 +149,10 @@ function process_file(e) {
             employeeShifts[element.__EMPTY] = employeeShifts[element.__EMPTY] || [];
             employeeShifts[element.__EMPTY].push(element);
         });
+
         // If theres more than 1 shift for an employee, split the label ("if exists")
         Object.keys(employeeShifts).forEach(_tm => {
+            employeeShifts[_tm].sort((a, b) => a.__EMPTY_5 - b.__EMPTY_5);
             if (employeeShifts[_tm].length > 1) {
                 employeeShifts[_tm].forEach((shift, index) => {
                     if (shift.__EMPTY_3 !== undefined && shift.__EMPTY_3.includes('/')) {
@@ -127,17 +175,18 @@ function process_file(e) {
 
 
                     }
-
-                    // also add elipses if there is another shift after this one
-                    if (index < employeeShifts[_tm].length - 1) {
-                        shift.__NEXT_INDICATOR = ' ⇄';
-                    }
-                    // if theres one before it, add a before indicator
-                    if (index > 0) {
-                        shift.__PREVIOUS_INDICATOR = '⇆ ';
-                    }
                 });
             }
+
+            employeeShifts[_tm] = splitOverlappingShifts(employeeShifts[_tm]);
+            employeeShifts[_tm].forEach((shift, index) => {
+                if (index < employeeShifts[_tm].length - 1) {
+                    shift.__NEXT_INDICATOR = ' ⇄';
+                }
+                if (index > 0) {
+                    shift.__PREVIOUS_INDICATOR = '⇆ ';
+                }
+            });
 
             var start = employeeShifts[_tm][0].__EMPTY_5;
             var end = employeeShifts[_tm][employeeShifts[_tm].length - 1].__EMPTY_6;
@@ -148,11 +197,9 @@ function process_file(e) {
             if (employeeShifts[_tm].some(shift => shift.__EMPTY_4 === "Regular Cashier" || shift.__EMPTY_4 === "Express Cashier" || shift.__EMPTY_4 === "Easy Scan Cashier" || shift.__EMPTY_4 === "Liquor TM" || shift.__EMPTY_4 === "Runner" || shift.__EMPTY_4 === "Courtesy Clerk") || show_all_breaks) {
                 let lunch = "";
                 employeeShifts[_tm].forEach((shift, i) => {
-                lunch = shift?.__EMPTY_7;
-
-                if (!lunch) return; // skip shifts without lunch
-
-                console.log(`Shift ${i} lunch:`, lunch);
+                    if (shift?.__EMPTY_7) {
+                        lunch = shift.__EMPTY_7;
+                    }
                 });
                 var breaks = generateBreaks(start, end, day, employeeShifts[_tm][0].__EMPTY_10, lunch);
             }
