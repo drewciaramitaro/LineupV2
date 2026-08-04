@@ -317,7 +317,7 @@ function process_file(e) {
             const shouldPushBreaks = false;//!noPushJobs.includes(element.__EMPTY_4);
 
             // if the job is "Courtesy Clerk", "Regular Cashier", "Express Cashier", "Easy Scan Cashier", "Liquor TM", "Runner", do breaks   
-            if (!no_breaks && (element.__EMPTY_4 === "Courtesy Clerk" || element.__EMPTY_4 === "Regular Cashier" || element.__EMPTY_4 === "Express Cashier" || element.__EMPTY_4 === "Easy Scan Cashier" || element.__EMPTY_4 === "Liquor TM" || element.__EMPTY_4 === "Runner" || show_all_breaks)) {
+            if (!no_breaks && (element.__EMPTY_4 === "Courtesy Clerk" || element.__EMPTY_4 === "Regular Cashier" || element.__EMPTY_4 === "Express Cashier" || element.__EMPTY_4 === "Easy Scan Cashier" || element.__EMPTY_4 === "Liquor TM" || show_all_breaks)) {
 
                 let break1 = element.__BREAK1 ? 'B ' + element.__BREAK1.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
                 let lunch = element.__LUNCH ? 'L ' + element.__LUNCH.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
