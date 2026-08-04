@@ -113,6 +113,7 @@ function process_file(e) {
     var sort_by_time = document.querySelector('#sort-time').checked;
     var job_filter = document.querySelector('#job-filter').value;
     var sort_express_with_regular = document.querySelector('#express-with-regular').checked;
+    var sort_by_group = document.querySelector('#sort-by-group').checked;
 
 
     const row_template = document.querySelector('#row-template');
@@ -227,11 +228,12 @@ function process_file(e) {
         newday.sort((a, b) => a.__EMPTY_5 - b.__EMPTY_5);
         // Sort the shifts by job title
         newday.sort((a, b) => {
-            if (sort_express_with_regular) {
+            if (sort_express_with_regular && !sort_by_group) {
                 // if the job is express, sort it with the regualr cashiers
                 var job_a = a.__EMPTY_4 === "Express Cashier" ? "Regular Cashier" : a.__EMPTY_4;
                 var job_b = b.__EMPTY_4 === "Express Cashier" ? "Regular Cashier" : b.__EMPTY_4;
             }
+
             else {
                 var job_a = a.__EMPTY_4;
                 var job_b = b.__EMPTY_4;
@@ -243,12 +245,53 @@ function process_file(e) {
         });
 
 
+        const groups = {
+            "Supervision & Administration": ["Supervisor", "Co Manager", "CSM"],
+            "Office": ["Office Teammate", "Cash and Sales"],
+            "Maintenance": ["Housekeeping"],
+            "Checkout": ["Regular Cashier", "Express Cashier", "Easy Scan Cashier", "Liquor TM", "Courtesy Clerk"],
+            "Instacart": ["Shopper", "Runner"],
+            "PAC": ["PAC", "PCC", "PAC Apprentice"],
+            "Other": []
+        }
+
+        for (const seg in newday) {
+            newday[seg].__GROUP = Object.keys(groups).find(group => groups[group].includes(newday[seg].__EMPTY_4)) || "Other";
+        }
+
         var breaktimes = [];
 
         if (sort_by_time) {
             // Sort the shifts by start time
             newday.sort((a, b) => a.__EMPTY_5 - b.__EMPTY_5);
         }
+
+        if (sort_by_group) {
+            newday.sort((a, b) => {
+                const groupOrder = ["Supervision & Administration", "Office",  "Maintenance", "Instacart", "Checkout", "PAC", "Other"];
+
+                var job_a = a.__EMPTY_4;
+                var job_b = b.__EMPTY_4;
+
+                var group_a = a.__GROUP;
+                var group_b = b.__GROUP;
+
+                // if the group is undefined, set it to "Other"
+                if (group_a === undefined) group_a = "Other";
+                if (group_b === undefined) group_b = "Other";
+
+                const groupIndexA = groupOrder.indexOf(group_a);
+                const groupIndexB = groupOrder.indexOf(group_b);
+                if (groupIndexA !== groupIndexB) {
+                    return groupIndexA - groupIndexB;
+                }
+
+                return a.__EMPTY_5 - b.__EMPTY_5;
+            });
+        }
+
+        var lastGroup = null;
+
         newday.forEach(element => {
 
             var row = row_template.content.cloneNode(true);
@@ -306,8 +349,34 @@ function process_file(e) {
             if (job_filter && job_filter.length > 0 && !element.__EMPTY_4.toLowerCase().includes(job_filter.toLowerCase())) {
                 return; // skip this row if it doesn't match the job filter
             }
+
+            // add a group header if the group has changed
+            if (sort_by_group && element.__GROUP !== lastGroup) {
+                var groupRow = row_template.content.cloneNode(true);
+                groupRow.querySelector('#employee').innerHTML = element.__GROUP;
+                groupRow.querySelector('#employee').style.fontWeight = 'bold';
+                groupRow.querySelector('#employee').colSpan = '10';
+                groupRow.querySelector('#employee').style.textAlign = 'center';
+                groupRow.querySelector('#employee').style.backgroundColor = '#000000';
+                groupRow.querySelector('#employee').style.color = '#ffffff';
+                groupRow.querySelector('#employee').style.printColorAdjust = 'exact';
+                groupRow.querySelector('#employee').style.fontSize = '1.2em';
+
+                groupRow.querySelector('#label-c').remove();
+                groupRow.querySelector('#job').remove();
+                groupRow.querySelector('#start').remove();
+                groupRow.querySelector('#end').remove();
+                groupRow.querySelector('#break-c').remove();
+                groupRow.querySelector('#lunch-c').remove();
+                groupRow.querySelector('#break2-c').remove();
+                groupRow.querySelector('#length').remove();
+                groupRow.querySelector('#notes').remove()
+                table_body.appendChild(groupRow);
+                lastGroup = element.__GROUP;
+            }
             table_body.appendChild(row);
         });
+        
         holder.appendChild(table);
         console.log(employeeShifts);
     });
